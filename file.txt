@@ -1,4 +1,6 @@
 select* from orders;
+
+--Wildcard
 first_database=# select firstname ,lastname,city from customer where lastname like'%ta';
  firstname | lastname |  city
 -----------+----------+---------
@@ -30,4 +32,192 @@ first_database=# select firstname ,lastname,city from customer where lastname li
  firstname | lastname |  city
 -----------+----------+---------
  Ramesh    | Gupta    | Kolkata
+(1 row)
+
+
+--Bitwise operations
+first_database=# select firstname, city from customer where lastname is null;
+ firstname | city
+-----------+------
+(0 rows)
+
+
+first_database=# select firstname, city from customer where lastname is not null;
+ firstname |  city
+-----------+---------
+ Ram      +| Mumbai
+           |
+ Rahul     | Noida
+ Ramesh    | Kolkata
+ Sahil     | Kolkata
+ Mohan     | Chennai
+(5 rows)
+
+
+first_database=# select firstname,city from customer where firstname >'r';
+ firstname |  city
+-----------+---------
+ Ram      +| Mumbai
+           |
+ Rahul     | Noida
+ Ramesh    | Kolkata
+ Sahil     | Kolkata
+(4 rows)
+
+dvdrental=# select amount,rental_id from public.payment where amount>5 limit 10;
+ amount | rental_id
+--------+-----------
+   7.99 |      1520
+   7.99 |      1849
+   7.99 |      3130
+   5.99 |      3382
+   5.99 |      2190
+   5.99 |      2914
+   6.99 |      1564
+   6.99 |      2461
+   8.99 |      2980
+   5.99 |      1994
+(10 rows)
+
+
+dvdrental=# select amount,rental_id from public.payment where amount<=5 limit 10;
+ amount | rental_id
+--------+-----------
+   1.99 |      1778
+   2.99 |      2829
+   2.99 |      3081
+   4.99 |      1547
+   0.99 |      1879
+   0.99 |      1922
+   0.99 |      3407
+   3.99 |      1341
+   4.99 |      1475
+   0.99 |      1731
+(10 rows)
+
+
+dvdrental=# select amount,rental_id from public.payment where amount=5.99 limit 10;
+ amount | rental_id
+--------+-----------
+   5.99 |      3382
+   5.99 |      2190
+   5.99 |      2914
+   5.99 |      1994
+   5.99 |      1792
+   5.99 |      1246
+   5.99 |      2114
+   5.99 |      1675
+   5.99 |      1499
+   5.99 |      1662
+(10 rows)
+
+
+dvdrental=# select name from public.category;
+    name
+-------------
+ Action
+ Animation
+ Children
+ Classics
+ Comedy
+ Documentary
+ Drama
+ Family
+ Foreign
+ Games
+ Horror
+ Music
+ New
+ Sci-Fi
+ Sports
+ Travel
+(16 rows)
+
+--Group by 
+dvdrental=# select
+dvdrental-# category.name, count(film_category.film_id) as "count of film"
+dvdrental-# from
+dvdrental-# public.category,
+dvdrental-# public.film_category
+dvdrental-# where
+dvdrental-# category.category_id=film_category.category_id
+dvdrental-# group by
+dvdrental-# category.category_id;
+    name     | count of film
+-------------+---------------
+ Classics    |            57
+ Sci-Fi      |            61
+ Children    |            60
+ Games       |            61
+ Drama       |            62
+ New         |            63
+ Foreign     |            73
+ Action      |            64
+ Comedy      |            58
+ Animation   |            66
+ Travel      |            57
+ Sports      |            74
+ Documentary |            68
+ Music       |            51
+ Family      |            69
+ Horror      |            56
+(16 rows)
+
+--Distinct
+dvdrental=# select distinct rental.customer_id from public.rental order by rental.customer_id limit 10;
+ customer_id
+-------------
+           1
+           2
+           3
+           4
+           5
+           6
+           7
+           8
+           9
+          10
+(10 rows)
+
+--Order By ascending
+dvdrental=# select  rental.customer_id, rental.rental_Date from public.rental order by rental.customer_id limit 10;
+ customer_id |     rental_date
+-------------+---------------------
+           1 | 2005-06-18 13:33:59
+           1 | 2005-06-21 06:24:45
+           1 | 2005-06-18 08:41:48
+           1 | 2005-06-15 18:02:53
+           1 | 2005-05-25 11:30:37
+           1 | 2005-06-15 00:54:12
+           1 | 2005-06-15 21:08:46
+           1 | 2005-06-16 15:18:57
+           1 | 2005-05-28 10:35:23
+           1 | 2005-07-08 03:17:05
+(10 rows)
+
+--Order By ascending and descending both
+dvdrental=# select distinct rental.customer_id, rental.rental_Date from public.rental order by rental.customer_id asc, rental.rental_date desc limit 10 ;
+ customer_id |     rental_date
+-------------+---------------------
+           1 | 2005-08-22 20:03:46
+           1 | 2005-08-22 19:41:37
+           1 | 2005-08-22 01:27:57
+           1 | 2005-08-21 23:33:57
+           1 | 2005-08-19 13:56:54
+           1 | 2005-08-19 09:55:16
+           1 | 2005-08-18 03:57:29
+           1 | 2005-08-17 12:37:54
+           1 | 2005-08-02 18:01:38
+           1 | 2005-08-02 15:36:52
+(10 rows)
+
+--Aggregate Functions
+dvdrental=# select max(payment.amount) as max,
+dvdrental-# min(payment.amount) as min,
+dvdrental-# avg(payment.amount) as avg,
+dvdrental-# sum(payment.amount) as "Total sum"
+dvdrental-# from public.payment;
+  max  | min  |        avg         | Total sum
+-------+------+--------------------+-----------
+ 11.99 | 0.00 | 4.2006056453822965 |  61312.04
 (1 row)
