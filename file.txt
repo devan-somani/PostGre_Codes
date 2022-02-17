@@ -1,1 +1,33 @@
 select* from orders;
+first_database=# select firstname ,lastname,city from customer where lastname like'%ta';
+ firstname | lastname |  city
+-----------+----------+---------
+ Ramesh    | Gupta    | Kolkata
+ Sahil     | Gupta    | Kolkata
+(2 rows)
+
+
+first_database=# select firstname ,lastname,city from customer where lastname like'%a%';
+ firstname | lastname |  city
+-----------+----------+---------
+ Ram      +| Sharma   | Mumbai
+           |          |
+ Rahul     | Vaidya   | Noida
+ Ramesh    | Gupta    | Kolkata
+ Sahil     | Gupta    | Kolkata
+ Mohan     | Anjikar  | Chennai
+(5 rows)
+
+
+first_database=# select firstname ,lastname,city from customer where lastname like'%r';
+ firstname | lastname |  city
+-----------+----------+---------
+ Mohan     | Anjikar  | Chennai
+(1 row)
+
+
+first_database=# select firstname ,lastname,city from customer where lastname like'%a' and firstname like '%h';
+ firstname | lastname |  city
+-----------+----------+---------
+ Ramesh    | Gupta    | Kolkata
+(1 row)
