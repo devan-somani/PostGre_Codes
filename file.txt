@@ -1,4 +1,95 @@
-select* from orders;
+--Indexes
+dvdrental=# create table public.movie(
+dvdrental(# movie_id int primary key,
+dvdrental(# movie_name varchar not null,
+dvdrental(# date_of_release date);
+CREATE TABLE
+
+dvdrental=# insert into public.movie(movie_id,movie_name,date_of_release)
+dvdrental-# values
+dvdrental-# (1,'RRR','2022-02-25'),
+dvdrental-# (2,'Attack','2022-02-23'),
+dvdrental-# (3,'Spiderman','2021-12-19'),
+dvdrental-# (4,'Jersey','2022-03-2'),
+dvdrental-# (5,'Dr Strange','2022-12-22'),
+dvdrental-# (6,'Sooryawanshi','2021-10-20'),
+dvdrental-# (7,'Bachan Pandey','2022-03-20'),
+dvdrental-# (8,'Pushpa','2022-01-02');
+INSERT 0 8
+
+dvdrental=# explain select * from public.movie
+dvdrental-# where movie_name='Jersey';
+                      QUERY PLAN
+-------------------------------------------------------
+ Seq Scan on movie  (cost=0.00..25.00 rows=6 width=40)
+   Filter: ((movie_name)::text = 'Jersey'::text)
+(2 rows)
+
+
+dvdrental=# create index idx_movie_name on public.movie(movie_name);
+CREATE INDEX
+dvdrental=# explain select * from public.movie
+dvdrental-# where movie_name='Jersey';
+                      QUERY PLAN
+------------------------------------------------------
+ Seq Scan on movie  (cost=0.00..1.10 rows=1 width=40)
+   Filter: ((movie_name)::text = 'Jersey'::text)
+(2 rows)
+ 
+--------------------------------------------------------------------------------------------------------------------
+
+--List Of Indexes
+
+dvdrental=# select * from
+dvdrental-# pg_indexes
+dvdrental-# where tablename='movie';
+ schemaname | tablename |   indexname    | tablespace |                               indexdef
+------------+-----------+----------------+------------+-----------------------------------------------------------------------
+ public     | movie     | movie_pkey     |            | CREATE UNIQUE INDEX movie_pkey ON public.movie USING btree (movie_id)
+ public     | movie     | idx_movie_name |            | CREATE INDEX idx_movie_name ON public.movie USING btree (movie_name)
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+----Partial Indexing
+dvdrental=# Select * from public.movie order by movie_id;
+ movie_id |  movie_name   | date_of_release | Released or Not
+----------+---------------+-----------------+-----------------
+        1 | RRR           | 2022-02-25      | Not Rleased
+        2 | Attack        | 2022-02-23      | Not Rleased
+        3 | Spiderman     | 2021-12-19      | Released
+        4 | Jersey        | 2022-03-02      | Not Rleased
+        5 | Dr Strange    | 2022-12-22      | Released
+        6 | Sooryawanshi  | 2021-10-20      | Released
+        7 | Bachan Pandey | 2022-03-20      | Not Rleased
+        8 | Pushpa        | 2022-01-02      | Not Rleased
+(8 rows)
+
+
+dvdrental=# explain select *
+dvdrental-# from public.movie
+dvdrental-# where "Released or Not"='Released';
+                        QUERY PLAN
+----------------------------------------------------------
+ Seq Scan on movie  (cost=0.00..1.10 rows=1 width=72)
+   Filter: (("Released or Not")::text = 'Released'::text)
+(2 rows)
+
+----------------------------------------------------------------------------------------------------------------
+dvdrental=# create index idx_release
+dvdrental-# on public.movie("Released or Not")
+dvdrental-# where "Released or Not"='Released';
+CREATE INDEX
+dvdrental=# explain select *
+dvdrental-# from public.movie
+dvdrental-# where "Released or Not"='Released';
+                        QUERY PLAN
+----------------------------------------------------------
+ Seq Scan on movie  (cost=0.00..1.10 rows=1 width=72)
+   Filter: (("Released or Not")::text = 'Released'::text)
+(2 rows)
+
+-----------------------------------------------------------------------------------------------------------------
 
 --Wildcard
 first_database=# select firstname ,lastname,city from customer where lastname like'%ta';
@@ -34,6 +125,7 @@ first_database=# select firstname ,lastname,city from customer where lastname li
  Ramesh    | Gupta    | Kolkata
 (1 row)
 
+----------------------------------------------------------------------------------------------------------------
 
 --Bitwise operations
 first_database=# select firstname, city from customer where lastname is null;
@@ -133,6 +225,8 @@ dvdrental=# select name from public.category;
  Travel
 (16 rows)
 
+----------------------------------------------------------------------------------------------------------------
+
 --Group by 
 dvdrental=# select
 dvdrental-# category.name, count(film_category.film_id) as "count of film"
@@ -163,6 +257,8 @@ dvdrental-# category.category_id;
  Horror      |            56
 (16 rows)
 
+----------------------------------------------------------------------------------------------------------------
+
 --Distinct
 dvdrental=# select distinct rental.customer_id from public.rental order by rental.customer_id limit 10;
  customer_id
@@ -178,6 +274,8 @@ dvdrental=# select distinct rental.customer_id from public.rental order by renta
            9
           10
 (10 rows)
+
+----------------------------------------------------------------------------------------------------------------
 
 --Order By ascending
 dvdrental=# select  rental.customer_id, rental.rental_Date from public.rental order by rental.customer_id limit 10;
@@ -211,6 +309,8 @@ dvdrental=# select distinct rental.customer_id, rental.rental_Date from public.r
            1 | 2005-08-02 15:36:52
 (10 rows)
 
+----------------------------------------------------------------------------------------------------------------
+
 --Aggregate Functions
 dvdrental=# select max(payment.amount) as max,
 dvdrental-# min(payment.amount) as min,
@@ -221,3 +321,4 @@ dvdrental-# from public.payment;
 -------+------+--------------------+-----------
  11.99 | 0.00 | 4.2006056453822965 |  61312.04
 (1 row)
+----------------------------------------------------------------------------------------------------------------
