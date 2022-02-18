@@ -1,0 +1,119 @@
+--SubQuery
+--SubQuery with where clause;
+-- Query to print staff id whose amount is great than avrage amount;
+dvdrental=# select amount,staff_id from public.payment;
+ amount | staff_id
+--------+----------
+   7.99 |        2
+   1.99 |        1
+   7.99 |        1
+   2.99 |        2
+   7.99 |        2
+   5.99 |        1
+   5.99 |        2
+   5.99 |        1
+   2.99 |        1
+   4.99 |        2
+   6.99 |        1
+   0.99 |        2
+   0.99 |        2
+   6.99 |        2
+   8.99 |        1
+   0.99 |        1
+   3.99 |        1
+   4.99 |        2
+   0.99 |        1
+   0.99 |        2
+   4.99 |        1
+   0.99 |        2
+   4.99 |        2
+   5.99 |        1
+   2.99 |        2
+   2.99 |        1
+   8.99 |        2
+--
+dvdrental=# select staff_id, sum(amount) from public.payment
+dvdrental-# where
+dvdrental-# payment.amount>(select AVG(payment.amount) from public.payment)
+dvdrental-# group by staff_id;
+ staff_id |   sum
+----------+----------
+        1 | 21437.41
+        2 | 22385.02
+(2 rows)
+
+dvdrental=# select staff_id, sum(amount),avg(amount) from public.payment
+dvdrental-# where
+dvdrental-# payment.amount>(select AVG(payment.amount) from public.payment)
+dvdrental-# group by staff_id;
+ staff_id |   sum    |        avg
+----------+----------+--------------------
+        1 | 21437.41 | 6.2083434694468578
+        2 | 22385.02 | 6.2371189746447478
+(2 rows)
+
+
+dvdrental=# select staff_id, avg(amount) from public.payment
+dvdrental-# where
+dvdrental-# payment.amount>(select AVG(payment.amount) from public.payment)
+dvdrental-# group by staff_id;
+ staff_id |        avg
+----------+--------------------
+        1 | 6.2083434694468578
+        2 | 6.2371189746447478
+(2 rows)
+
+-----Query to print customer id and amount whose customer id>350 and firstname has 'n' character in it;
+dvdrental=# select p.customer_id,p.amount
+dvdrental-# from public.payment p
+dvdrental-# where p.customer_id in
+dvdrental-# (select c.customer_id
+dvdrental(# from public.customer c
+dvdrental(# where c.customer_id> 350 and c.first_name like '%n%');
+ customer_id | amount
+-------------+--------
+         353 |   2.99
+         353 |   7.99
+         353 |   6.99
+         354 |   0.99
+         354 |   4.99
+         354 |   6.99
+         354 |   2.99
+         361 |   4.99
+         361 |   1.99
+         361 |   2.99
+         361 |   2.99
+         364 |   2.99
+         364 |   2.99
+         364 |   4.99
+         364 |   4.99
+         364 |   3.99
+         366 |   1.99
+         366 |   0.99
+         370 |   6.99
+         375 |   2.99
+         375 |   5.99
+         375 |   4.99
+         376 |   0.99
+         376 |   0.99
+         378 |   4.99
+         378 |   5.99
+         378 |   7.99
+
+dvdrental=# explain
+dvdrental-# select p.customer_id,p.amount
+dvdrental-# from public.payment p
+dvdrental-# where p.customer_id in
+dvdrental-# (select c.customer_id
+dvdrental(# from public.customer c
+dvdrental(# where c.customer_id> 350 and c.first_name like '%n%');
+                                     QUERY PLAN
+-------------------------------------------------------------------------------------
+ Hash Join  (cost=19.25..330.75 rows=2621 width=8)
+   Hash Cond: (p.customer_id = c.customer_id)
+   ->  Seq Scan on payment p  (cost=0.00..270.42 rows=15542 width=8)
+   ->  Hash  (cost=17.98..17.98 rows=101 width=4)
+         ->  Seq Scan on customer c  (cost=0.00..17.98 rows=101 width=4)
+               Filter: ((customer_id > 350) AND ((first_name)::text ~~ '%n%'::text))
+(6 rows)
+
