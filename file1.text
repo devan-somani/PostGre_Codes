@@ -1,4 +1,258 @@
+--Joins
+__inner Joins
+dvdrental-# select payment.customer_id,payment.amount from public.payment inner join public.customer
+dvdrental-# on payment.customer_id=customer.customer_id
+dvdrental-# where customer.customer_id>350 and customer.first_name like '%n%';
+                                     QUERY PLAN
+-------------------------------------------------------------------------------------
+ Hash Join  (cost=19.25..330.75 rows=2621 width=8)
+   Hash Cond: (payment.customer_id = customer.customer_id)
+   ->  Seq Scan on payment  (cost=0.00..270.42 rows=15542 width=8)
+   ->  Hash  (cost=17.98..17.98 rows=101 width=4)
+         ->  Seq Scan on customer  (cost=0.00..17.98 rows=101 width=4)
+               Filter: ((customer_id > 350) AND ((first_name)::text ~~ '%n%'::text))
+(6 rows)
+
+ select customer.first_name, customer.last_name,rental.rental_date,rental.return_date
+dvdrental-# from public.customer inner join public.rental
+dvdrental-# on customer.customer_id=rental.customer_id;
+ first_name  |  last_name   |     rental_date     |     return_date
+-------------+--------------+---------------------+---------------------
+ Tommy       | Collazo      | 2005-05-24 22:54:33 | 2005-05-28 19:40:33
+ Manuel      | Murrell      | 2005-05-24 23:03:39 | 2005-06-01 22:12:39
+ Andrew      | Purdy        | 2005-05-24 23:04:41 | 2005-06-03 01:43:41
+ Delores     | Hansen       | 2005-05-24 23:05:21 | 2005-06-02 04:33:21
+ Nelson      | Christenson  | 2005-05-24 23:08:07 | 2005-05-27 01:32:07
+ Cassandra   | Walters      | 2005-05-24 23:11:53 | 2005-05-29 20:34:53
+ Minnie      | Romero       | 2005-05-24 23:31:46 | 2005-05-27 23:33:46
+ Ellen       | Simpson      | 2005-05-25 00:00:40 | 2005-05-28 00:22:40
+ Danny       | Isom         | 2005-05-25 00:02:21 | 2005-05-31 22:44:21
+ April       | Burns        | 2005-05-25 00:09:02 | 2005-06-02 20:56:02
+ Deanna      | Byrd         | 2005-05-25 00:19:27 | 2005-05-30 05:44:27
+ Raymond     | Mcwhorter    | 2005-05-25 00:22:55 | 2005-05-30 04:28:55
+ Theodore    | Culp         | 2005-05-25 00:31:15 | 2005-05-26 02:56:15
+ Ronald      | Weiner       | 2005-05-25 00:39:22 | 2005-06-03 03:30:22
+ Steven      | Curley       | 2005-05-25 00:43:11 | 2005-05-26 04:42:11
+ Isaac       | Oglesby      | 2005-05-25 01:06:36 | 2005-05-27 00:43:36
+ Ruth        | Martinez     | 2005-05-25 01:10:47 | 2005-05-31 06:35:47
+ Ronnie      | Ricketts     | 2005-05-25 01:17:24 | 2005-05-31 06:00:24
+ Roberta     | Harper       | 2005-05-25 01:48:41 | 2005-05-27 02:20:41
+ Craig       | Morrell      | 2005-05-25 01:59:46 | 2005-05-26 01:01:46
+ Raul        | Fortier      | 2005-05-25 02:19:23 | 2005-05-26 04:52:23
+ Barry       | Lovelace     | 2005-05-25 02:40:21 | 2005-05-29 06:34:21
+ Juan        | Fraley       | 2005-05-25 02:53:02 | 2005-05-27 01:15:02
+ Pamela      | Baker        | 2005-05-25 03:21:20 | 2005-05-27 21:25:20
+ Billy       | Poulin       | 2005-05-25 03:36:50 | 2005-05-31 00:34:50
+ Robert      | Baughman     | 2005-05-25 03:41:50 | 2005-05-30 01:13:50
+ Constance   | Reid         | 2005-05-25 03:42:37 | 2005-05-26 09:26:37
+dvdrental=#
+dvdrental=# SELECT
+dvdrental-# c.customer_id,
+dvdrental-# c.first_name customer_first_name,
+dvdrental-# c.last_name customer_last_name,
+dvdrental-# s.first_name staff_first_name,
+dvdrental-# s.last_name staff_last_name,
+dvdrental-# amount,
+dvdrental-# payment_date
+dvdrental-# FROM
+dvdrental-# customer c
+dvdrental-# INNER JOIN payment p
+dvdrental-#     ON p.customer_id = c.customer_id
+dvdrental-# INNER JOIN staff s
+dvdrental-#     ON p.staff_id = s.staff_id
+dvdrental-# ORDER BY payment_date;
+ERROR:  relation "customer" does not exist
+LINE 10: customer c
+         ^
+dvdrental=#  select film.film_id,
+dvdrental-# title,inventory_id
+dvdrental-# from public.film left join public.inventory
+dvdrental-# on inventory.film_id=film.film_id;
+ film_id |            title            | inventory_id
+---------+-----------------------------+--------------
+       1 | Academy Dinosaur            |            1
+       1 | Academy Dinosaur            |            2
+       1 | Academy Dinosaur            |            3
+       1 | Academy Dinosaur            |            4
+       1 | Academy Dinosaur            |            5
+       1 | Academy Dinosaur            |            6
+       1 | Academy Dinosaur            |            7
+       1 | Academy Dinosaur            |            8
+       2 | Ace Goldfinger              |            9
+       2 | Ace Goldfinger              |           10
+       2 | Ace Goldfinger              |           11
+       3 | Adaptation Holes            |           12
+       3 | Adaptation Holes            |           13
+       3 | Adaptation Holes            |           14
+       3 | Adaptation Holes            |           15
+       4 | Affair Prejudice            |           16
+       4 | Affair Prejudice            |           17
+       4 | Affair Prejudice            |           18
+       4 | Affair Prejudice            |           19
+       4 | Affair Prejudice            |           20
+       4 | Affair Prejudice            |           21
+       4 | Affair Prejudice            |           22
+       5 | African Egg                 |           23
+       5 | African Egg                 |           24
+       5 | African Egg                 |           25
+       6 | Agent Truman                |           26
+       6 | Agent Truman                |           27
+
+-----Outer Join
+dvdrental=# select customer.customer_id,customer.first_name,payment.amount,payment.payment_date
+dvdrental-# from public.customer full outer join public.payment
+dvdrental-# on customer.customer_id=payment.customer_id;
+ customer_id | first_name  | amount |        payment_date
+-------------+-------------+--------+----------------------------
+         341 | Peter       |   7.99 | 2007-02-15 22:25:46.996577
+         341 | Peter       |   1.99 | 2007-02-16 17:23:14.996577
+         341 | Peter       |   7.99 | 2007-02-16 22:41:45.996577
+         341 | Peter       |   2.99 | 2007-02-19 19:39:56.996577
+         341 | Peter       |   7.99 | 2007-02-20 17:31:48.996577
+         341 | Peter       |   5.99 | 2007-02-21 12:33:49.996577
+         342 | Harold      |   5.99 | 2007-02-17 23:58:17.996577
+         342 | Harold      |   5.99 | 2007-02-20 02:11:44.996577
+         342 | Harold      |   2.99 | 2007-02-20 13:57:39.996577
+         343 | Douglas     |   4.99 | 2007-02-16 00:10:50.996577
+         343 | Douglas     |   6.99 | 2007-02-16 01:15:33.996577
+         343 | Douglas     |   0.99 | 2007-02-17 01:26:00.996577
+         343 | Douglas     |   0.99 | 2007-02-17 04:32:51.996577
+         343 | Douglas     |   6.99 | 2007-02-18 18:26:38.996577
+         343 | Douglas     |   8.99 | 2007-02-20 07:03:29.996577
+         343 | Douglas     |   0.99 | 2007-02-21 14:42:28.996577
+         344 | Henry       |   3.99 | 2007-02-15 10:54:44.996577
+         344 | Henry       |   4.99 | 2007-02-15 19:36:27.996577
+         344 | Henry       |   0.99 | 2007-02-16 14:00:38.996577
+         345 | Carl        |   0.99 | 2007-02-15 01:26:17.996577
+         345 | Carl        |   4.99 | 2007-02-15 18:34:15.996577
+         345 | Carl        |   0.99 | 2007-02-16 00:27:01.996577
+         345 | Carl        |   4.99 | 2007-02-19 16:13:41.996577
+         346 | Arthur      |   5.99 | 2007-02-17 09:35:32.996577
+         346 | Arthur      |   2.99 | 2007-02-21 12:02:45.996577
+         346 | Arthur      |   2.99 | 2007-02-21 15:51:24.996577
+         347 | Ryan        |   8.99 | 2007-02-16 12:40:18.996577
+---Left Join
+dvdrental=#  select film.film_id,
+dvdrental-# title,inventory_id
+dvdrental-# from public.film left join public.inventory
+dvdrental-# on inventory.film_id=film.film_id;
+ film_id |            title            | inventory_id
+---------+-----------------------------+--------------
+       1 | Academy Dinosaur            |            1
+       1 | Academy Dinosaur            |            2
+       1 | Academy Dinosaur            |            3
+       1 | Academy Dinosaur            |            4
+       1 | Academy Dinosaur            |            5
+       1 | Academy Dinosaur            |            6
+       1 | Academy Dinosaur            |            7
+       1 | Academy Dinosaur            |            8
+       2 | Ace Goldfinger              |            9
+       2 | Ace Goldfinger              |           10
+       2 | Ace Goldfinger              |           11
+       3 | Adaptation Holes            |           12
+       3 | Adaptation Holes            |           13
+       3 | Adaptation Holes            |           14
+       3 | Adaptation Holes            |           15
+       4 | Affair Prejudice            |           16
+       4 | Affair Prejudice            |           17
+       4 | Affair Prejudice            |           18
+       4 | Affair Prejudice            |           19
+       4 | Affair Prejudice            |           20
+       4 | Affair Prejudice            |           21
+       4 | Affair Prejudice            |           22
+       5 | African Egg                 |           23
+       5 | African Egg                 |           24
+       5 | African Egg                 |           25
+       6 | Agent Truman                |           26
+       6 | Agent Truman                |           27
+
+
 --SubQuery
+--SubQuery in from clause
+dvdrental=# select film_category.film_id, subquery.name
+dvdrental-# from public.film_category,
+dvdrental-# (select category_id,name from public.category)subquery
+dvdrental-# where subquery.category_id=film_category.category_id;
+ film_id |    name
+---------+-------------
+       1 | Documentary
+       2 | Horror
+       3 | Documentary
+       4 | Horror
+       5 | Family
+       6 | Foreign
+       7 | Comedy
+       8 | Horror
+       9 | Horror
+      10 | Sports
+      11 | Foreign
+      12 | Music
+      13 | Horror
+      14 | Classics
+      15 | Foreign
+      16 | Foreign
+      17 | Music
+      18 | Animation
+      19 | Action
+      20 | Music
+      21 | Action
+      22 | New
+      23 | Animation
+      24 | Horror
+      25 | New
+      26 | Sci-Fi
+      27 | Sports
+
+--Subquery In select Clause;
+select customer.first_name,(
+dvdrental(# Select max(amount) from public.payment
+dvdrental(# where customer.customer_id = payment.customer_id) subquery2
+dvdrental-# from public.customer ;
+ first_name  | subquery2
+-------------+-----------
+ Jared       |      8.99
+ Mary        |      9.99
+ Patricia    |     10.99
+ Linda       |     10.99
+ Barbara     |      8.99
+ Elizabeth   |      9.99
+ Jennifer    |      7.99
+ Maria       |      8.99
+ Susan       |      9.99
+ Margaret    |      7.99
+ Dorothy     |      8.99
+ Lisa        |      9.99
+ Nancy       |     10.99
+ Karen       |     11.99
+ Betty       |      7.99
+ Helen       |      8.99
+ Sandra      |      8.99
+ Donna       |      8.99
+ Carol       |      8.99
+ Ruth        |      9.99
+ Sharon      |      7.99
+ Michelle    |     10.99
+ Laura       |      9.99
+ Sarah       |      9.99
+ Kimberly    |      8.99
+ Deborah     |      8.99
+ Jessica     |      9.99
+
+------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --SubQuery with where clause;
 -- Query to print staff id whose amount is great than avrage amount;
 dvdrental=# select amount,staff_id from public.payment;
@@ -117,3 +371,5 @@ dvdrental(# where c.customer_id> 350 and c.first_name like '%n%');
                Filter: ((customer_id > 350) AND ((first_name)::text ~~ '%n%'::text))
 (6 rows)
 
+
+      
