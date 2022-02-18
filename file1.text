@@ -1,3 +1,97 @@
+--View Information for rental placed for most recent update day
+
+dvdrental=# select rental_id,last_update
+dvdrental-# from public.rental
+dvdrental-# where return_date=(
+dvdrental(# select max(return_date) from public.rental);
+ rental_id |     last_update
+-----------+---------------------
+     16005 | 2006-02-16 02:30:53
+(1 row)
+
+
+--Multiple Joins
+dvdrental=# Select Customer.first_name, Staff.first_name,payment.amount as "Total payment"
+dvdrental-# from public.customer
+dvdrental-# inner join public.payment
+dvdrental-# on customer.customer_id=payment.customer_id
+dvdrental-# inner join
+dvdrental-# public.staff
+dvdrental-# on payment.staff_id=staff.staff_id;
+ first_name  | first_name | Total payment
+-------------+------------+---------------
+ Peter       | Jon        |          7.99
+ Peter       | Mike       |          1.99
+ Peter       | Mike       |          7.99
+ Peter       | Jon        |          2.99
+ Peter       | Jon        |          7.99
+ Peter       | Mike       |          5.99
+ Harold      | Jon        |          5.99
+ Harold      | Mike       |          5.99
+ Harold      | Mike       |          2.99
+ Douglas     | Jon        |          4.99
+ Douglas     | Mike       |          6.99
+ Douglas     | Jon        |          0.99
+ Douglas     | Jon        |          0.99
+ Douglas     | Jon        |          6.99
+ Douglas     | Mike       |          8.99
+ Douglas     | Mike       |          0.99
+ Henry       | Mike       |          3.99
+ Henry       | Jon        |          4.99
+ Henry       | Mike       |          0.99
+ Carl        | Jon        |          0.99
+ Carl        | Mike       |          4.99
+ Carl        | Jon        |          0.99
+ Carl        | Jon        |          4.99
+ Arthur      | Mike       |          5.99
+ Arthur      | Jon        |          2.99
+ Arthur      | Mike       |          2.99
+ Ryan        | Jon        |          8.99
+
+ --Cross Join
+ dvdrental=# select film.title,film_actor.actor_id
+dvdrental-# from public.film
+dvdrental-# cross join public.film_actor
+dvdrental-# limit 15;
+       title       | actor_id
+-------------------+----------
+ Chamber Italian   |        1
+ Grosse Wonderful  |        1
+ Airport Pollock   |        1
+ Bright Encounters |        1
+ Academy Dinosaur  |        1
+ Ace Goldfinger    |        1
+ Adaptation Holes  |        1
+ Affair Prejudice  |        1
+ African Egg       |        1
+ Agent Truman      |        1
+ Airplane Sierra   |        1
+ Alabama Devil     |        1
+ Aladdin Calendar  |        1
+ Alamo Videotape   |        1
+ Alaska Phantom    |        1
+
+ --Self Join
+ dvdrental=# select e.emp_id,e.emp_name,e.manager_id
+dvdrental-# from public.emp q
+dvdrental-# left join public.emp e
+dvdrental-# on q.emp_id=e.emp_id
+dvdrental-# where q.manager_id is null;
+ emp_id | emp_name | manager_id
+--------+----------+------------
+      7 | mahish   |
+(1 row)
+
+
+
+
+
+
+
+
+
+
+
 --Joins
 __inner Joins
 dvdrental-# select payment.customer_id,payment.amount from public.payment inner join public.customer
